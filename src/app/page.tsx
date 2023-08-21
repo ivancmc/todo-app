@@ -92,7 +92,7 @@ const TodoApp = () => {
   return (
     <Layout>
       <Center>
-        <Card align={"center"} w={["sm", "md", "lg"]}>
+        <Card align={"center"} w={["sm", "md", "lg"]} h="full">
           <CardHeader w={"full"} p={0}>
             <Heading
               w={"full"}
@@ -140,7 +140,7 @@ const TodoApp = () => {
             </HStack>
           </CardHeader>
           <CardBody
-            minH={["md"]}
+            minH={["lg"]}
             maxH={["md", "md", "lg"]}
             overflow={"auto"}
             p={3}
