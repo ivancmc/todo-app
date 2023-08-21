@@ -140,7 +140,7 @@ const TodoApp = () => {
             </HStack>
           </CardHeader>
           <CardBody
-            minH={["md", "md"]}
+            minH={["md"]}
             maxH={["md", "md", "lg"]}
             overflow={"auto"}
             p={3}
