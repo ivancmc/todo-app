@@ -1,95 +1,226 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+import Layout from "@/components/Layout";
+import { CloseIcon, Search2Icon } from "@chakra-ui/icons";
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Center,
+  Checkbox,
+  Flex,
+  HStack,
+  Heading,
+  Icon,
+  Input,
+  InputGroup,
+  InputRightElement,
+  List,
+  Spacer,
+  Stack,
+  StackDivider,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
+import { useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { FaTrash } from "react-icons/fa";
 
-export default function Home() {
+const TodoApp = () => {
+  const [tasks, setTasks] = useState<string[]>([]);
+  const [taskInput, setTaskInput] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+
+  const onDragEnd = (result: any) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const items = [...tasks];
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setTasks(items);
+  };
+
+  const addTask = () => {
+    if (taskInput.trim() !== "") {
+      setTasks([...tasks, taskInput]);
+      setTaskInput("");
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      addTask();
+    }
+  };
+
+  const toggleTask = (index: number) => {
+    const updatedTasks = [...tasks];
+    updatedTasks[index] = updatedTasks[index].startsWith("✅")
+      ? updatedTasks[index].substring(2)
+      : `✅ ${updatedTasks[index]}`;
+    setTasks(updatedTasks);
+  };
+
+  const removeTask = (index: number) => {
+    const updatedTasks = tasks.filter((_, i) => i !== index);
+    setTasks(updatedTasks);
+  };
+
+  const removeAllTasks = () => {
+    setTasks([]);
+  };
+
+  const filteredTasks = tasks.filter((task) => {
+    return task.includes(searchInput);
+  });
+
+  const iconSearch = () => {
+    if (searchInput != "") {
+      return (
+        <CloseIcon color={"gray.400"} onClick={() => setSearchInput("")} />
+      );
+    } else {
+      return <Search2Icon color={"gray.400"} />;
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Layout>
+      <Center>
+        <Card align={"center"} w={["sm", "md", "lg"]}>
+          <CardHeader w={"full"} p={0}>
+            <Heading
+              w={"full"}
+              textAlign={"center"}
+              bgColor={"blue.500"}
+              color={"white"}
+              p={3}
+            >
+              Lista de Tarefas
+            </Heading>
+            <HStack p={3}>
+              <InputGroup size={"lg"}>
+                <Input
+                  size="lg"
+                  placeholder="Buscar tarefas"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                />
+                <InputRightElement>
+                  {searchInput != "" ? (
+                    <CloseIcon
+                      color={"gray.400"}
+                      cursor={"pointer"}
+                      onClick={() => setSearchInput("")}
+                    />
+                  ) : (
+                    <Search2Icon color={"gray.400"} />
+                  )}
+                </InputRightElement>
+              </InputGroup>
+              <Tooltip label="Limpar tudo">
+                <Button
+                  size={"lg"}
+                  colorScheme="gray"
+                  variant="outline"
+                  w={"50px"}
+                >
+                  <Icon
+                    as={FaTrash}
+                    color="gray"
+                    onClick={() => removeAllTasks()}
+                  />
+                </Button>
+              </Tooltip>
+            </HStack>
+          </CardHeader>
+          <CardBody
+            minH={["sm", "md"]}
+            maxH={["md", "md", "lg"]}
+            overflow={"auto"}
+            p={3}
+            w={"full"}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="tasks">
+                {(provided: any) => (
+                  <List ref={provided.innerRef} {...provided.droppableProps}>
+                    <Stack divider={<StackDivider />} spacing="4">
+                      {filteredTasks.map((task, index) => (
+                        <Draggable
+                          key={index}
+                          draggableId={index.toString()}
+                          index={index}
+                        >
+                          {(provided: any) => (
+                            <Box
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              p={1}
+                            >
+                              <Flex alignItems="center">
+                                <Checkbox
+                                  isChecked={task.startsWith("✅")}
+                                  onChange={() => toggleTask(index)}
+                                />
+                                <Text
+                                  ml={2}
+                                  textDecoration={
+                                    task.startsWith("✅")
+                                      ? "line-through"
+                                      : "none"
+                                  }
+                                >
+                                  {task}
+                                </Text>
+                                <Spacer />
+                                <Icon
+                                  as={FaTrash}
+                                  color="red"
+                                  onClick={() => removeTask(index)}
+                                />
+                              </Flex>
+                            </Box>
+                          )}
+                        </Draggable>
+                      ))}
+                    </Stack>
+                    {provided.placeholder}
+                  </List>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </CardBody>
+          <CardFooter w={"full"} bgColor={"gray.100"} mt={2}>
+            <InputGroup size={"lg"} bgColor={"white"}>
+              <Input
+                placeholder="Digite uma tarefa"
+                value={taskInput}
+                onChange={(e) => setTaskInput(e.target.value)}
+                onKeyDown={handleKeyPress}
+              />
+              <InputRightElement>
+                <Button
+                  colorScheme="blue"
+                  size="lg"
+                  roundedLeft={0}
+                  onClick={addTask}
+                >
+                  +
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+          </CardFooter>
+        </Card>
+      </Center>
+    </Layout>
+  );
+};
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+export default TodoApp;
