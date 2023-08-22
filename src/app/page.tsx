@@ -196,7 +196,7 @@ const TodoApp = () => {
             bgColor={"gray.100"}
             mt={2}
             bottom={[0, 0, "unset"]}
-            position={["fixed", "fixed", "unset"]}
+            position={["sticky", "sticky", "unset"]}
           >
             <InputGroup size={"lg"} bgColor={"white"}>
               <Input
