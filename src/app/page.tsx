@@ -49,6 +49,10 @@ const TodoApp = () => {
     if (taskInput.trim() !== "") {
       setTasks([...tasks, taskInput]);
       setTaskInput("");
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
 
