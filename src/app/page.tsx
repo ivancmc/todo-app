@@ -76,7 +76,7 @@ const TodoApp = () => {
   };
 
   const filteredTasks = tasks.filter((task) => {
-    return task.includes(searchInput);
+    return task.toLowerCase().includes(searchInput.toLowerCase());
   });
 
   return (
@@ -196,7 +196,7 @@ const TodoApp = () => {
             bgColor={"gray.100"}
             mt={2}
             bottom={[0, 0, "unset"]}
-            position={["sticky", "sticky", "unset"]}
+            position={["fixed", "fixed", "unset"]}
           >
             <InputGroup size={"lg"} bgColor={"white"}>
               <Input
