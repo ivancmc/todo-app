@@ -79,23 +79,17 @@ const TodoApp = () => {
     return task.includes(searchInput);
   });
 
-  const iconSearch = () => {
-    if (searchInput != "") {
-      return (
-        <CloseIcon color={"gray.400"} onClick={() => setSearchInput("")} />
-      );
-    } else {
-      return <Search2Icon color={"gray.400"} />;
-    }
-  };
-
   return (
     <Layout>
       <Center>
-        <Card align={"center"} w={["sm", "md", "lg"]} h="full">
-          <CardHeader w={"full"} p={0}>
+        <Card
+          align={"center"}
+          w={["full", "full", "lg"]}
+          h={{ base: "calc(100vh)", md: "2xl" }}
+        >
+          <CardHeader w={"inherit"} p={0}>
             <Heading
-              w={"full"}
+              w={"inherit"}
               textAlign={"center"}
               bgColor={"blue.500"}
               color={"white"}
@@ -140,11 +134,10 @@ const TodoApp = () => {
             </HStack>
           </CardHeader>
           <CardBody
-            minH={["lg"]}
-            maxH={["md", "md", "lg"]}
+            maxH={{ base: "calc(100vh - 225px)", md: "auto" }}
             overflow={"auto"}
             p={3}
-            w={"full"}
+            w={"inherit"}
           >
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="tasks">
@@ -197,7 +190,13 @@ const TodoApp = () => {
               </Droppable>
             </DragDropContext>
           </CardBody>
-          <CardFooter w={"full"} bgColor={"gray.100"} mt={2}>
+          <CardFooter
+            w={"inherit"}
+            bgColor={"gray.100"}
+            mt={2}
+            bottom={[0, 0, "unset"]}
+            position={["fixed", "fixed", "unset"]}
+          >
             <InputGroup size={"lg"} bgColor={"white"}>
               <Input
                 placeholder="Digite uma tarefa"
