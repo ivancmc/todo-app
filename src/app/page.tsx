@@ -84,8 +84,9 @@ const TodoApp = () => {
       <Center>
         <Card
           align={"center"}
+          shadow={{ base: "none", md: "var(--card-shadow)" }}
           w={["full", "full", "lg"]}
-          h={{ base: "calc(100vh)", md: "2xl" }}
+          h={{ base: "auto", md: "2xl" }}
         >
           <CardHeader w={"inherit"} p={0}>
             <Heading
