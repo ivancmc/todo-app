@@ -1,6 +1,12 @@
 "use client";
 import { CloseIcon, Search2Icon } from "@chakra-ui/icons";
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   Card,
@@ -24,17 +30,31 @@ import {
   Tooltip,
   useColorMode,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { BsMoonStarsFill, BsSun } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 
+class Task {
+  text: string;
+  done: boolean;
+
+  constructor(text: string) {
+    this.text = text;
+    this.done = false;
+  }
+}
+
 const TodoApp = () => {
-  const [tasks, setTasks] = useState<string[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [taskInput, setTaskInput] = useState<string>("");
   const [searchInput, setSearchInput] = useState<string>("");
   const { colorMode, toggleColorMode } = useColorMode();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
+  const [taskIndex, setTaskIndex] = useState<number | null>(null);
 
   const onDragEnd = (result: any) => {
     if (!result.destination) {
@@ -50,7 +70,8 @@ const TodoApp = () => {
 
   const addTask = () => {
     if (taskInput.trim() !== "") {
-      setTasks([...tasks, taskInput]);
+      const newTask = new Task(taskInput);
+      setTasks([...tasks, newTask]);
       setTaskInput("");
     }
   };
@@ -63,23 +84,38 @@ const TodoApp = () => {
 
   const toggleTask = (index: number) => {
     const updatedTasks = [...tasks];
-    updatedTasks[index] = updatedTasks[index].startsWith("✅")
-      ? updatedTasks[index].substring(2)
-      : `✅ ${updatedTasks[index]}`;
+    updatedTasks[index].done
+      ? (updatedTasks[index].done = false)
+      : (updatedTasks[index].done = true);
     setTasks(updatedTasks);
+  };
+
+  const openConfirmClear = () => {
+    if (tasks.length > 0) {
+      setTaskIndex(null);
+      onOpen();
+    }
+  };
+
+  const removeAllTasks = () => {
+    setTasks([]);
+    onClose();
+  };
+
+  const openConfirmDelete = (index: number) => {
+    setTaskIndex(index);
+    onOpen();
   };
 
   const removeTask = (index: number) => {
     const updatedTasks = tasks.filter((_, i) => i !== index);
     setTasks(updatedTasks);
-  };
-
-  const removeAllTasks = () => {
-    setTasks([]);
+    setTaskIndex(null);
+    onClose();
   };
 
   const filteredTasks = tasks.filter((task) => {
-    return task.toLowerCase().includes(searchInput.toLowerCase());
+    return task.text.toLowerCase().includes(searchInput.toLowerCase());
   });
 
   return (
@@ -132,7 +168,7 @@ const TodoApp = () => {
                 variant="outline"
                 w={"50px"}
               >
-                <Icon as={FaTrash} onClick={() => removeAllTasks()} />
+                <Icon as={FaTrash} onClick={() => openConfirmClear()} />
               </Button>
             </Tooltip>
           </HStack>
@@ -163,20 +199,18 @@ const TodoApp = () => {
                           >
                             <Flex alignItems="center">
                               <Checkbox
-                                isChecked={task.startsWith("✅")}
+                                isChecked={task.done}
                                 onChange={() => toggleTask(index)}
                                 size={"lg"}
                               />
                               <Text
                                 ml={2}
                                 textDecoration={
-                                  task.startsWith("✅")
-                                    ? "line-through"
-                                    : "none"
+                                  task.done ? "line-through" : "none"
                                 }
                                 fontSize={"lg"}
                               >
-                                {task}
+                                {task.text}
                               </Text>
                               <Spacer />
                               <Button
@@ -184,7 +218,7 @@ const TodoApp = () => {
                                 colorScheme="red"
                                 variant="outline"
                                 w={"fit-content"}
-                                onClick={() => removeTask(index)}
+                                onClick={() => openConfirmDelete(index)}
                               >
                                 <Icon as={FaTrash} />
                               </Button>
@@ -230,6 +264,55 @@ const TodoApp = () => {
           </InputGroup>
         </CardFooter>
       </Card>
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {(() => {
+                if (taskIndex != null) {
+                  return <>Excluir tarefa</>;
+                } else {
+                  return <>Excluir tarefas</>;
+                }
+              })()}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              {(() => {
+                if (taskIndex != null) {
+                  return (
+                    <>
+                      Tem certeza que deseja excluir a tarefa &quot;
+                      {tasks[taskIndex]?.text}&quot;?
+                    </>
+                  );
+                } else {
+                  return <>Tem certeza que deseja limpar tudo?</>;
+                }
+              })()}
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Não
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() =>
+                  taskIndex != null ? removeTask(taskIndex) : removeAllTasks()
+                }
+                ml={3}
+              >
+                Sim
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Center>
   );
 };
