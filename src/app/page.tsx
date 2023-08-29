@@ -17,8 +17,8 @@ import {
   Checkbox,
   Flex,
   HStack,
-  Heading,
   Icon,
+  Image,
   Input,
   InputGroup,
   InputRightElement,
@@ -139,9 +139,14 @@ const TodoApp = () => {
             p={3}
             justify={"space-between"}
           >
-            <Heading color={useColorModeValue("white", "black")}>
+            {/* <Heading color={useColorModeValue("white", "black")}>
               Lista de Tarefas
-            </Heading>
+            </Heading> */}
+            <Image
+              src={colorMode === "light" ? "/logo-white.png" : "/logo.png"}
+              alt="Logo"
+              height={"35px"}
+            />
             <Button
               aria-label="Toggle Color Mode"
               onClick={toggleColorMode}

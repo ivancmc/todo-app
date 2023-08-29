@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat_Alternates } from "next/font/google";
 import { Providers } from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
+const mainFont = Montserrat_Alternates({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Lista de tarefas",
   description: "App de lista de tarefas",
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
@@ -16,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt_br">
-      <body className={inter.className}>
+      <body className={mainFont.className}>
         <Providers>{children}</Providers>
       </body>
     </html>
