@@ -139,9 +139,6 @@ const TodoApp = () => {
             p={3}
             justify={"space-between"}
           >
-            {/* <Heading color={useColorModeValue("white", "black")}>
-              Lista de Tarefas
-            </Heading> */}
             <Image
               src={colorMode === "light" ? "/logo-white.png" : "/logo.png"}
               alt="Logo"
@@ -284,6 +281,7 @@ const TodoApp = () => {
         isOpen={isOpen}
         leastDestructiveRef={cancelRef}
         onClose={onClose}
+        isCentered
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
