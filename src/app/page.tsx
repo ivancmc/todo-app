@@ -14,16 +14,6 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-export class Task {
-  text: string;
-  done: boolean;
-
-  constructor(text: string) {
-    this.text = text;
-    this.done = false;
-  }
-}
-
 const TodoApp = () => {
   return (
     <TaskProvider>

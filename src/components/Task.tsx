@@ -1,16 +1,25 @@
-import { Task } from "@/app/page";
+import { Task } from "@/data/class/Task";
 import { useTaskContext } from "@/data/contexts/TaskContext";
+import { CheckIcon, CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
+  ButtonGroup,
   Checkbox,
+  Editable,
+  EditablePreview,
+  EditableTextarea,
   Flex,
   Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
-  Text,
+  useEditableControls,
 } from "@chakra-ui/react";
 import { Draggable } from "react-beautiful-dnd";
-import { FaTrash } from "react-icons/fa";
+import { SlOptionsVertical } from "react-icons/sl";
 
 interface TaskProps {
   index: number;
@@ -18,7 +27,62 @@ interface TaskProps {
 }
 
 export default function TaskComponent(props: TaskProps) {
-  const { toggleTask, openConfirmDelete } = useTaskContext();
+  const { toggleTask, updateTask, openConfirmDelete } = useTaskContext();
+
+  function EditableControls() {
+    const {
+      isEditing,
+      getSubmitButtonProps,
+      getCancelButtonProps,
+      getEditButtonProps,
+    } = useEditableControls();
+
+    return isEditing ? (
+      <ButtonGroup
+        display={"flex"}
+        flexDir={"column"}
+        justifyContent="center"
+        alignItems={"center"}
+        size="sm"
+        orientation="vertical"
+      >
+        <IconButton
+          aria-label="check"
+          icon={<CheckIcon />}
+          {...getSubmitButtonProps()}
+        />
+        <Spacer />
+        <IconButton
+          aria-label="close"
+          icon={<CloseIcon />}
+          {...getCancelButtonProps()}
+        />
+      </ButtonGroup>
+    ) : (
+      <>
+        <Spacer />
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label="Options"
+            icon={<Icon as={SlOptionsVertical} />}
+            variant="ghost"
+          />
+          <MenuList minW={"min"}>
+            <MenuItem icon={<EditIcon />} {...getEditButtonProps()}>
+              Editar
+            </MenuItem>
+            <MenuItem
+              icon={<DeleteIcon />}
+              onClick={() => openConfirmDelete(props.index)}
+            >
+              Excluir
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </>
+    );
+  }
 
   return (
     <Draggable
@@ -39,23 +103,22 @@ export default function TaskComponent(props: TaskProps) {
               onChange={() => toggleTask(props.index)}
               size={"lg"}
             />
-            <Text
+            <Editable
               ml={2}
-              textDecoration={props.task.done ? "line-through" : "none"}
-              fontSize={"lg"}
+              fontSize="lg"
+              defaultValue={props.task.text}
+              alignItems="center"
+              w={"full"}
+              flexDir={"row"}
+              display={"flex"}
+              onSubmit={(newValue: string) => updateTask(props.index, newValue)}
             >
-              {props.task.text}
-            </Text>
-            <Spacer />
-            <Button
-              size={"md"}
-              colorScheme="red"
-              variant="outline"
-              w={"fit-content"}
-              onClick={() => openConfirmDelete(props.index)}
-            >
-              <Icon as={FaTrash} />
-            </Button>
+              <EditablePreview
+                textDecoration={props.task.done ? "line-through" : "none"}
+              />
+              <EditableTextarea w={"full"} mr={2} />
+              <EditableControls />
+            </Editable>
           </Flex>
         </Box>
       )}

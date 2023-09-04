@@ -1,5 +1,5 @@
-import { Task } from "@/app/page";
 import AlertDialogComponent from "@/components/AlertDialog";
+import { Task } from "@/data/class/Task";
 import { useDisclosure } from "@chakra-ui/react";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -10,6 +10,7 @@ interface TaskContextProps {
   taskSelectedIndex: number | null;
   setSearchInput: React.Dispatch<React.SetStateAction<string>>;
   addTask: (taskInput: string) => void;
+  updateTask: (index: number, taskInput: string) => void;
   toggleTask: (index: number) => void;
   removeTask: (index: number) => void;
   removeAllTasks: () => void;
@@ -25,6 +26,7 @@ const TaskContext = createContext<TaskContextProps>({
   taskSelectedIndex: null,
   setSearchInput: () => "",
   addTask: () => {},
+  updateTask: () => {},
   toggleTask: () => {},
   removeTask: () => {},
   removeAllTasks: () => {},
@@ -78,6 +80,14 @@ export function TaskProvider(props: any) {
     setTasks(updatedTasks);
   };
 
+  const updateTask = (index: number, taskInput: string) => {
+    if (taskInput.trim() !== "") {
+      const updatedTasks = [...tasks];
+      updatedTasks[index].text = taskInput;
+      setTasks(updatedTasks);
+    }
+  };
+
   const removeTask = (index: number) => {
     const updatedTasks = tasks.filter((_, i) => i !== index);
     setTasks(updatedTasks);
@@ -129,6 +139,7 @@ export function TaskProvider(props: any) {
         taskSelectedIndex,
         setSearchInput,
         addTask,
+        updateTask,
         toggleTask,
         removeTask,
         removeAllTasks,
