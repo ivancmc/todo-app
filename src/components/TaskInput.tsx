@@ -1,49 +1,75 @@
 import { useTaskContext } from "@/data/contexts/TaskContext";
+import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
-  Input,
-  InputGroup,
-  InputRightElement,
-  useColorModeValue,
+  IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Textarea,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const TaskInput = () => {
   const { addTask } = useTaskContext();
   const [taskInput, setTaskInput] = useState("");
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleAddTask();
-    }
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const initialRef = useRef(null);
 
   const handleAddTask = () => {
     if (taskInput.trim() !== "") {
       addTask(taskInput);
       setTaskInput("");
+      setIsModalOpen(false);
     }
   };
 
   return (
-    <InputGroup size={"lg"} bgColor={useColorModeValue("white", "transparent")}>
-      <Input
-        placeholder="Digite uma tarefa"
-        value={taskInput}
-        onChange={(e) => setTaskInput(e.target.value)}
-        onKeyDown={(e) => handleKeyPress(e)}
+    <>
+      <IconButton
+        isRound={true}
+        variant="solid"
+        colorScheme="teal"
+        aria-label="Add"
+        icon={<AddIcon />}
+        size={"lg"}
+        onClick={() => setIsModalOpen(true)}
+        top={["unset", "unset", "calc(var(--chakra-sizes-2xl) - 4em)"]}
+        left={["unset", "unset", "calc(50vw + 10em)"]}
+        bottom={[10, 10, "unset"]}
+        right={[8, 8, "unset"]}
+        position={["fixed", "fixed", "fixed"]}
       />
-      <InputRightElement>
-        <Button
-          colorScheme="blue"
-          size="lg"
-          roundedLeft={0}
-          onClick={handleAddTask}
-        >
-          +
-        </Button>
-      </InputRightElement>
-    </InputGroup>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        isCentered
+        initialFocusRef={initialRef}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Adicionar tarefa</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Textarea
+              ref={initialRef}
+              value={taskInput}
+              onChange={(e) => setTaskInput(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="teal" onClick={handleAddTask}>
+              Adicionar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

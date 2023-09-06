@@ -58,6 +58,7 @@ export default function TaskComponent(props: TaskProps) {
         ml={2}
         textDecoration={props.task.done ? "line-through" : "none"}
         fontSize={"lg"}
+        wordBreak={"break-word"}
       >
         {props.task.text}
       </Text>

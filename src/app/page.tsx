@@ -7,7 +7,6 @@ import { TaskProvider } from "@/data/contexts/TaskContext";
 import {
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Center,
   HStack,
@@ -32,23 +31,10 @@ const TodoApp = () => {
               <Search />
             </HStack>
           </CardHeader>
-          <CardBody
-            maxH={{ base: "calc(100vh - 225px)", md: "auto" }}
-            overflow={"auto"}
-            p={3}
-            w={"inherit"}
-          >
+          <CardBody overflow={"auto"} p={3} w={"inherit"}>
             <TaskList />
-          </CardBody>
-          <CardFooter
-            w={"inherit"}
-            bgColor={useColorModeValue("gray.100", "blackAlpha.400")}
-            mt={2}
-            bottom={[0, 0, "unset"]}
-            position={["fixed", "fixed", "unset"]}
-          >
             <TaskInput />
-          </CardFooter>
+          </CardBody>
         </Card>
       </Center>
     </TaskProvider>
