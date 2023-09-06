@@ -22,7 +22,7 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SlOptionsVertical } from "react-icons/sl";
 
 interface TaskProps {
@@ -34,10 +34,17 @@ export default function TaskComponent(props: TaskProps) {
   const { toggleTask, updateTask, openConfirmDelete } = useTaskContext();
   const [taskUpdated, setTaskUpdated] = useState(props.task.text);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const initialRef = useRef(null);
+
+  const openModal = () => {
+    setTaskUpdated(props.task.text);
+    setIsModalOpen(true);
+  };
 
   const handleUpdateTask = () => {
     updateTask(props.index, taskUpdated);
     setIsModalOpen(false);
+    setTaskUpdated("");
   };
 
   return (
@@ -63,7 +70,7 @@ export default function TaskComponent(props: TaskProps) {
           variant="ghost"
         />
         <MenuList minW={"min"}>
-          <MenuItem icon={<EditIcon />} onClick={() => setIsModalOpen(true)}>
+          <MenuItem icon={<EditIcon />} onClick={openModal}>
             Editar
           </MenuItem>
           <MenuItem
@@ -78,6 +85,7 @@ export default function TaskComponent(props: TaskProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         isCentered
+        initialFocusRef={initialRef}
       >
         <ModalOverlay />
         <ModalContent>
@@ -85,6 +93,7 @@ export default function TaskComponent(props: TaskProps) {
           <ModalCloseButton />
           <ModalBody>
             <Textarea
+              ref={initialRef}
               value={taskUpdated}
               onChange={(e) => setTaskUpdated(e.target.value)}
             />
