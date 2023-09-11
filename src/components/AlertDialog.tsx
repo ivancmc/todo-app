@@ -18,7 +18,7 @@ interface AlertDialogProps {
 
 export default function AlertDialogComponent(props: AlertDialogProps) {
   const cancelRef = useRef<HTMLButtonElement | null>(null);
-  const { tasks, taskSelectedIndex } = useTaskContext();
+  const { tasks, taskIdSelected, getTaskById } = useTaskContext();
 
   return (
     <AlertDialog
@@ -31,7 +31,7 @@ export default function AlertDialogComponent(props: AlertDialogProps) {
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             {(() => {
-              if (taskSelectedIndex != null) {
+              if (taskIdSelected != null) {
                 return <>Excluir tarefa</>;
               } else {
                 return <>Excluir tarefas</>;
@@ -41,11 +41,11 @@ export default function AlertDialogComponent(props: AlertDialogProps) {
 
           <AlertDialogBody>
             {(() => {
-              if (taskSelectedIndex != null) {
+              if (taskIdSelected != null) {
                 return (
                   <>
                     Tem certeza que deseja excluir a tarefa &quot;
-                    {tasks[taskSelectedIndex]?.text}&quot;?
+                    {getTaskById(taskIdSelected)?.text}&quot;?
                   </>
                 );
               } else {

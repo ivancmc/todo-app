@@ -14,11 +14,7 @@ const TaskList = () => {
           <List ref={provided.innerRef} {...provided.droppableProps}>
             <Stack divider={<StackDivider />} spacing="4">
               {filteredTasks.map((task: Task, index: number) => (
-                <Draggable
-                  key={index}
-                  draggableId={index.toString()}
-                  index={index}
-                >
+                <Draggable key={task.id} draggableId={task.id} index={index}>
                   {(provided: any) => (
                     <ListItem
                       ref={provided.innerRef}
@@ -26,7 +22,7 @@ const TaskList = () => {
                       {...provided.dragHandleProps}
                       p={1}
                     >
-                      <TaskComponent index={index} task={task} key={index} />
+                      <TaskComponent task={task} key={task.id} />
                     </ListItem>
                   )}
                 </Draggable>

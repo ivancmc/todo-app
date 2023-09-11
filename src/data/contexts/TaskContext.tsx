@@ -7,23 +7,24 @@ interface TaskContextProps {
   searchInput: string;
   tasks: Task[];
   filteredTasks: Task[];
-  taskSelectedIndex: number | null;
+  taskIdSelected: string | null;
   setSearchInput: React.Dispatch<React.SetStateAction<string>>;
   addTask: (taskInput: string) => void;
-  updateTask: (index: number, taskInput: string) => void;
-  toggleTask: (index: number) => void;
-  removeTask: (index: number) => void;
+  updateTask: (id: string, taskInput: string) => void;
+  toggleTask: (id: string) => void;
+  removeTask: (id: string) => void;
   removeAllTasks: () => void;
   onDragEnd: (result: any) => void;
   openConfirmClear: () => void;
-  openConfirmDelete: (index: number) => void;
+  openConfirmDelete: (id: string) => void;
+  getTaskById: (id: string) => Task | undefined;
 }
 
 const TaskContext = createContext<TaskContextProps>({
   searchInput: "",
   tasks: [],
   filteredTasks: [],
-  taskSelectedIndex: null,
+  taskIdSelected: null,
   setSearchInput: () => "",
   addTask: () => {},
   updateTask: () => {},
@@ -33,6 +34,7 @@ const TaskContext = createContext<TaskContextProps>({
   onDragEnd: () => {},
   openConfirmClear: () => {},
   openConfirmDelete: () => {},
+  getTaskById: () => {},
 });
 
 export function useTaskContext(): TaskContextProps {
@@ -46,9 +48,7 @@ export function useTaskContext(): TaskContextProps {
 export function TaskProvider(props: any) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchInput, setSearchInput] = useState<string>("");
-  const [taskSelectedIndex, setTaskSelectedIndex] = useState<number | null>(
-    null
-  );
+  const [taskIdSelected, setTaskIdSelected] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -67,31 +67,39 @@ export function TaskProvider(props: any) {
     return task.text.toLowerCase().includes(searchInput.toLowerCase());
   });
 
+  const getTaskById = (id: string) => {
+    return tasks?.find((t) => t.id == id);
+  };
+
   const addTask = (taskInput: string) => {
     const newTask = new Task(taskInput);
     setTasks([...tasks, newTask]);
   };
 
-  const toggleTask = (index: number) => {
-    const updatedTasks = [...tasks];
-    updatedTasks[index].done
-      ? (updatedTasks[index].done = false)
-      : (updatedTasks[index].done = true);
-    setTasks(updatedTasks);
-  };
-
-  const updateTask = (index: number, taskInput: string) => {
-    if (taskInput.trim() !== "") {
+  const toggleTask = (id: string) => {
+    const task = getTaskById(id);
+    if (task) {
+      task.done ? (task.done = false) : (task.done = true);
       const updatedTasks = [...tasks];
-      updatedTasks[index].text = taskInput;
       setTasks(updatedTasks);
     }
   };
 
-  const removeTask = (index: number) => {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
+  const updateTask = (id: string, taskInput: string) => {
+    if (taskInput.trim() !== "") {
+      const task = getTaskById(id);
+      if (task) {
+        task.text = taskInput;
+        const updatedTasks = [...tasks];
+        setTasks(updatedTasks);
+      }
+    }
+  };
+
+  const removeTask = (id: string) => {
+    const updatedTasks = tasks.filter((t) => t.id !== id);
     setTasks(updatedTasks);
-    setTaskSelectedIndex(null);
+    setTaskIdSelected(null);
   };
 
   const removeAllTasks = () => {
@@ -100,20 +108,18 @@ export function TaskProvider(props: any) {
 
   const openConfirmClear = () => {
     if (tasks.length > 0) {
-      setTaskSelectedIndex(null);
+      setTaskIdSelected(null);
       onOpen();
     }
   };
 
-  const openConfirmDelete = (index: number) => {
-    setTaskSelectedIndex(index);
+  const openConfirmDelete = (id: string) => {
+    setTaskIdSelected(id);
     onOpen();
   };
 
   const onConfirmDialog = () => {
-    taskSelectedIndex != null
-      ? removeTask(taskSelectedIndex)
-      : removeAllTasks();
+    taskIdSelected != null ? removeTask(taskIdSelected) : removeAllTasks();
 
     onClose();
   };
@@ -136,7 +142,7 @@ export function TaskProvider(props: any) {
         searchInput,
         tasks,
         filteredTasks,
-        taskSelectedIndex,
+        taskIdSelected,
         setSearchInput,
         addTask,
         updateTask,
@@ -146,6 +152,7 @@ export function TaskProvider(props: any) {
         onDragEnd,
         openConfirmClear,
         openConfirmDelete,
+        getTaskById,
       }}
     >
       {props.children}

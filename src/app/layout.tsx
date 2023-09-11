@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Montserrat_Alternates } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Providers } from "./providers";
 
-const mainFont = Montserrat_Alternates({
+const mainFont = Inter({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700"],
 });

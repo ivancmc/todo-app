@@ -26,7 +26,6 @@ import { useRef, useState } from "react";
 import { SlOptionsVertical } from "react-icons/sl";
 
 interface TaskProps {
-  index: number;
   task: Task;
 }
 
@@ -42,7 +41,7 @@ export default function TaskComponent(props: TaskProps) {
   };
 
   const handleUpdateTask = () => {
-    updateTask(props.index, taskUpdated);
+    updateTask(props.task.id, taskUpdated);
     setIsModalOpen(false);
     setTaskUpdated("");
   };
@@ -51,7 +50,7 @@ export default function TaskComponent(props: TaskProps) {
     <Flex alignItems="center">
       <Checkbox
         isChecked={props.task.done}
-        onChange={() => toggleTask(props.index)}
+        onChange={() => toggleTask(props.task.id)}
         size={"lg"}
       />
       <Text
@@ -71,12 +70,13 @@ export default function TaskComponent(props: TaskProps) {
           variant="ghost"
         />
         <MenuList minW={"min"}>
-          <MenuItem icon={<EditIcon />} onClick={openModal}>
+          <MenuItem fontSize={"lg"} icon={<EditIcon />} onClick={openModal}>
             Editar
           </MenuItem>
           <MenuItem
+            fontSize={"lg"}
             icon={<DeleteIcon />}
-            onClick={() => openConfirmDelete(props.index)}
+            onClick={() => openConfirmDelete(props.task.id)}
           >
             Excluir
           </MenuItem>

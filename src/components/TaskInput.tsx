@@ -38,9 +38,11 @@ const TaskInput = () => {
         aria-label="Add"
         icon={<AddIcon />}
         size={"lg"}
+        h={"60px"}
+        w={"60px"}
         onClick={() => setIsModalOpen(true)}
-        top={["unset", "unset", "calc(var(--chakra-sizes-2xl) - 4em)"]}
-        left={["unset", "unset", "calc(50vw + 10em)"]}
+        top={["unset", "unset", "calc(var(--chakra-sizes-2xl) - 5em)"]}
+        left={["unset", "unset", "calc(50vw + 8em)"]}
         bottom={[10, 10, "unset"]}
         right={[8, 8, "unset"]}
         position={["fixed", "fixed", "fixed"]}
