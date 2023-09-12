@@ -12,6 +12,7 @@ import {
   HStack,
   useColorModeValue,
 } from "@chakra-ui/react";
+import InstallPwaToast from "../components/InstallPwaToast";
 
 const TodoApp = () => {
   return (
@@ -40,5 +41,7 @@ const TodoApp = () => {
     </TaskProvider>
   );
 };
+
+InstallPwaToast;
 
 export default TodoApp;

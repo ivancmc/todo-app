@@ -1,31 +1,77 @@
 import { useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 
-const InstallPwaToast: React.FC = () => {
+// Defina um tipo para o evento beforeinstallprompt
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): void;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
+function InstallPwaToast() {
   const toast = useToast();
 
   useEffect(() => {
-    // Verifique se o navegador suporta a instalação de PWAs
     if ("serviceWorker" in navigator && "PushManager" in window) {
-      // Verifique se o PWA ainda não está instalado
-      if (!window.matchMedia("(display-mode: standalone)").matches) {
+      let deferredPrompt: BeforeInstallPromptEvent | null = null;
+
+      window.addEventListener("beforeinstallprompt", (e: Event) => {
+        e.preventDefault();
+
+        deferredPrompt = e as BeforeInstallPromptEvent;
+
+        const installPwa = () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+
+            deferredPrompt.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === "accepted") {
+                toast({
+                  title: "PWA Instalado",
+                  description: "O aplicativo foi instalado com sucesso!",
+                  status: "success",
+                  duration: 5000, // Defina a duração do Toast como desejado
+                  isClosable: true,
+                });
+              } else {
+                toast({
+                  title: "Instalação Cancelada",
+                  description: "Você cancelou a instalação do PWA.",
+                  status: "info",
+                  duration: 5000, // Defina a duração do Toast como desejado
+                  isClosable: true,
+                });
+              }
+            });
+
+            deferredPrompt = null;
+          }
+        };
+
+        const installButton = document.createElement("button");
+        installButton.innerText = "Instalar PWA";
+        installButton.addEventListener("click", installPwa);
+
         toast({
-          title: "Instalar o App",
+          title: "Instalar o PWA",
           description:
-            "Adicione este site à sua tela inicial para uma experiência melhor.",
-          status: "info", // Você pode personalizar o estilo do Toast conforme necessário
-          duration: null, // Defina para null para que o Toast não desapareça automaticamente
+            "Adicione este site à sua tela inicial para uma melhor experiência.",
+          status: "info",
+          duration: null,
           isClosable: true,
-          onCloseComplete: () => {
-            // Implemente aqui a lógica para instalar o PWA quando o usuário clicar no Toast
-            // Normalmente, você abriria a janela de instalação aqui
-          },
+          render: () => (
+            <button
+              onClick={installPwa}
+              style={{ background: "none", border: "none", cursor: "pointer" }}
+            >
+              Instalar PWA
+            </button>
+          ),
         });
-      }
+      });
     }
   }, [toast]);
 
   return null;
-};
+}
 
 export default InstallPwaToast;

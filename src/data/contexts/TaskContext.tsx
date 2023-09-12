@@ -34,7 +34,7 @@ const TaskContext = createContext<TaskContextProps>({
   onDragEnd: () => {},
   openConfirmClear: () => {},
   openConfirmDelete: () => {},
-  getTaskById: () => {},
+  getTaskById: () => undefined,
 });
 
 export function useTaskContext(): TaskContextProps {
