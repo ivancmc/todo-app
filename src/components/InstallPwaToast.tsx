@@ -1,4 +1,4 @@
-import { Button, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 
 function InstallPwaToast() {
@@ -52,11 +52,7 @@ function InstallPwaToast() {
             duration: null,
             isClosable: true,
             position: "top",
-            render: () => (
-              <Button onClick={installPwa} cursor={"pointer"}>
-                Instalar App
-              </Button>
-            ),
+            onCloseComplete: installPwa,
           });
         }
       });
