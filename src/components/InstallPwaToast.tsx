@@ -1,28 +1,18 @@
-import { useToast } from "@chakra-ui/react";
+import { Button, useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
-
-// Defina um tipo para o evento beforeinstallprompt
-// interface BeforeInstallPromptEvent extends Event {
-//   prompt(): void;
-//   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-// }
 
 function InstallPwaToast() {
   const toast = useToast();
+  const id = "install-toast";
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
-      console.log("entrou no if", window);
-
       let deferredPrompt: any = null;
 
-      window.addEventListener("beforeinstallprompt", (event) => {
-        console.log("pegou o evento", event);
+      window.addEventListener("beforeinstallprompt", (event: Event) => {
         event.preventDefault();
 
         deferredPrompt = event;
-
-        deferredPrompt.prompt();
 
         const installPwa = () => {
           if (deferredPrompt) {
@@ -52,22 +42,23 @@ function InstallPwaToast() {
           }
         };
 
-        toast({
-          title: "Instalar o PWA",
-          description:
-            "Adicione este site à sua tela inicial para uma melhor experiência.",
-          status: "info",
-          duration: null,
-          isClosable: true,
-          render: () => (
-            <button
-              onClick={installPwa}
-              style={{ background: "none", border: "none", cursor: "pointer" }}
-            >
-              Instalar PWA
-            </button>
-          ),
-        });
+        if (!toast.isActive(id)) {
+          toast({
+            id,
+            title: "Instalar o PWA",
+            description:
+              "Adicione este site à sua tela inicial para uma melhor experiência.",
+            status: "info",
+            duration: null,
+            isClosable: true,
+            position: "top",
+            render: () => (
+              <Button onClick={installPwa} cursor={"pointer"}>
+                Instalar App
+              </Button>
+            ),
+          });
+        }
       });
     }
   }, [toast]);
