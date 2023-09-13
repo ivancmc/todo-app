@@ -2,28 +2,33 @@ import { useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 
 // Defina um tipo para o evento beforeinstallprompt
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): void;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
+// interface BeforeInstallPromptEvent extends Event {
+//   prompt(): void;
+//   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+// }
 
 function InstallPwaToast() {
   const toast = useToast();
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
-      let deferredPrompt: BeforeInstallPromptEvent | null = null;
+      console.log("entrou no if", window);
 
-      window.addEventListener("beforeinstallprompt", (e: Event) => {
-        e.preventDefault();
+      let deferredPrompt: any = null;
 
-        deferredPrompt = e as BeforeInstallPromptEvent;
+      window.addEventListener("beforeinstallprompt", (event) => {
+        console.log("pegou o evento", event);
+        event.preventDefault();
+
+        deferredPrompt = event;
+
+        deferredPrompt.prompt();
 
         const installPwa = () => {
           if (deferredPrompt) {
             deferredPrompt.prompt();
 
-            deferredPrompt.userChoice.then((choiceResult) => {
+            deferredPrompt.userChoice.then((choiceResult: any) => {
               if (choiceResult.outcome === "accepted") {
                 toast({
                   title: "PWA Instalado",
@@ -46,10 +51,6 @@ function InstallPwaToast() {
             deferredPrompt = null;
           }
         };
-
-        const installButton = document.createElement("button");
-        installButton.innerText = "Instalar PWA";
-        installButton.addEventListener("click", installPwa);
 
         toast({
           title: "Instalar o PWA",

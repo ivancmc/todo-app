@@ -1,5 +1,6 @@
 "use client";
 import Header from "@/components/Header";
+import InstallPwaToast from "@/components/InstallPwaToast";
 import Search from "@/components/Search";
 import TaskInput from "@/components/TaskInput";
 import TaskList from "@/components/TaskList";
@@ -12,7 +13,6 @@ import {
   HStack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import InstallPwaToast from "../components/InstallPwaToast";
 
 const TodoApp = () => {
   return (
@@ -36,12 +36,11 @@ const TodoApp = () => {
             <TaskList />
             <TaskInput />
           </CardBody>
+          <InstallPwaToast />
         </Card>
       </Center>
     </TaskProvider>
   );
 };
-
-InstallPwaToast;
 
 export default TodoApp;
