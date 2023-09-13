@@ -8,6 +8,7 @@ function InstallPwaToast() {
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
       let deferredPrompt: any = null;
+      let installRejected: boolean = false;
 
       window.addEventListener("beforeinstallprompt", (event: Event) => {
         event.preventDefault();
@@ -28,6 +29,7 @@ function InstallPwaToast() {
                   isClosable: true,
                 });
               } else {
+                installRejected = true;
                 toast({
                   title: "Instalação Cancelada",
                   description: "Você cancelou a instalação do PWA.",
@@ -42,16 +44,15 @@ function InstallPwaToast() {
           }
         };
 
-        if (!toast.isActive(id)) {
+        if (!toast.isActive(id) && !installRejected) {
           toast({
             id,
-            title: "Instalar o PWA",
+            title: "Instalar o App",
             description:
               "Adicione este site à sua tela inicial para uma melhor experiência.",
             status: "info",
             duration: null,
             isClosable: true,
-            position: "top",
             onCloseComplete: installPwa,
           });
         }
